@@ -26,6 +26,8 @@ for r in rec_8:
 
     img_dd = img_draw[y:y+h, x:x+w, :].copy()
     best_c = get_profile(img_bin[y:y+h, x:x+w])
+    if best_c is None:
+        continue
     cv2.drawContours(img_dd, [best_c], -1, (0, 255, 0), 3)
     cv2.imshow('asdfg', img_dd)
     cv2.waitKey()

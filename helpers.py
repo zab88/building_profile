@@ -23,6 +23,13 @@ def get_8_parts(img_bin: np.array) -> list:
 def get_profile(img_bin: np.array):
     img_b = img_bin.copy()
 
+    hh, ww = img_bin.shape[:2]
+    # check that cell contains profile
+    has_something = img_bin[int(hh*0.1):int(hh*0.9), int(ww*0.1):int(ww*0.9)]
+    if np.count_nonzero(255 - has_something) < hh+ww:
+        return None
+
+
     kernel_size = 3
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     # img_b = cv2.erode(img_b, kernel)
