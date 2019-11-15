@@ -3,7 +3,8 @@ import numpy as np
 
 
 def get_8_parts(img_bin: np.array) -> list:
-    image_, contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # image_, contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     res = []
     for cnt in contours_:
@@ -33,6 +34,7 @@ def get_best_approx(cnt):
 
 def get_profile(img_bin: np.array):
     img_b = img_bin.copy()
+    # img_b = img_bin
 
     hh, ww = img_bin.shape[:2]
     # check that cell contains profile
@@ -45,7 +47,8 @@ def get_profile(img_bin: np.array):
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     # img_b = cv2.erode(img_b, kernel)
 
-    image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # searching for biggerst contour
     biggest_c = -1
@@ -63,10 +66,11 @@ def get_profile(img_bin: np.array):
 
         if w > 0.9*img_bin.shape[1] or h > 0.9*img_bin.shape[0]:
             continue
+        if w < 0.2 * img_bin.shape[1] and h < 0.2 * img_bin.shape[0]:
+            continue
 
         if w + h > biggest_c:
-            if w < 0.2*img_bin.shape[1] or h < 0.2*img_bin.shape[0]:
-                pass
+            # if w > 0.4*img_bin.shape[1] or h > 0.4*img_bin.shape[0]:
             best_c2 = best_c.copy() if best_c is not None else None
             biggest_c = w + h
             # best_c = cnt.copy()
@@ -74,15 +78,28 @@ def get_profile(img_bin: np.array):
             best_cnt = cnt.copy()
 
     # get_best_approx(best_cnt)
-    if best_c2 is not None:
+    if True:
         tmp_bin = np.zeros(img_bin.shape, np.uint8)
         tmp_bin[:, :] = 255
 
         cv2.drawContours(tmp_bin, [best_c], -1, (0,), -1)
-        cv2.drawContours(tmp_bin, [best_c2], -1, (0,), -1)
+        if best_c2 is not None:
+            cv2.drawContours(tmp_bin, [best_c2], -1, (0,), -1)
 
-        cv2.imshow('fff', tmp_bin)
-        cv2.waitKey()
+        kernel = np.ones((3, 3), np.uint8)
+        tmp_bin = cv2.erode(tmp_bin, kernel)
+
+        # cv2.imshow('fff', tmp_bin)
+        # cv2.waitKey()
+
+        # if merging correct, only one contour should be
+        contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        print(len(contours_))
+        if len(contours_) == 2:
+            return contours_[1]
+
+        # cv2.imshow('fff', tmp_bin)
+        # cv2.waitKey()
 
 
     return best_c

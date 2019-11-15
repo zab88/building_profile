@@ -24,50 +24,16 @@ for r in rec_8:
 
     cv2.rectangle(img_draw, (x, y), (x + w, y + h), (255, 0, 0), 1)
 
-    img_dd = img_draw[y:y+h, x:x+w, :].copy()
+    img_dd = img_draw[y:y+h, x:x+w, :]  #.copy()
     best_c = get_profile(img_bin[y:y+h, x:x+w])
     if best_c is None:
         continue
     cv2.drawContours(img_dd, [best_c], -1, (0, 255, 0), 3)
-    cv2.imshow('asdfg', img_dd)
-    cv2.waitKey()
-    print('asdfffa')
+    # cv2.imshow('asdfg', img_dd)
+    # cv2.waitKey()
 
 
 cv2.imshow('asdf', img_draw)
 cv2.waitKey()
 
-exit()
-
-image_, contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-max_xy = -1
-best_rec = None
-for cnt in contours_:
-    x, y, w, h = cv2.boundingRect(cnt)
-
-    # if w < 100 or h < 80:
-    #     continue
-    #
-    # if w + 2 > img_gray.shape[0] or h + 2 > img_gray.shape[1]:
-    #     continue
-    #
-    # rect = cv2.minAreaRect(cnt)
-    # if rect[1][0] / rect[1][1] < 0.6 or rect[1][0] / rect[1][1] > 0.7:
-    #     if rect[1][1] / rect[1][0] < 0.6 or rect[1][1] / rect[1][0] > 0.7:
-    #         continue
-    #
-    # if rect[1][1] + rect[1][0] > max_xy:
-    #     best_rec = rect
-    #     max_xy = rect[1][1] + rect[1][0]
-
-    # if w > 40 or h > 40:
-    #     continue
-
-    if w < 20 or h < 30:
-        continue
-
-    cv2.rectangle(img_draw, (x, y), (x + w, y + h), (255, 0, 0), 1)
-
-cv2.imshow('asdf', img_draw)
-cv2.waitKey()
+cv2.imwrite('out.jpg', img_draw)
