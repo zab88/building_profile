@@ -20,6 +20,17 @@ def get_8_parts(img_bin: np.array) -> list:
     return res
 
 
+def get_best_approx(cnt):
+    perimeter = cv2.arcLength(cnt, True)
+    area = cv2.contourArea(cnt)
+    area_list = []
+    for mult in [0.01, 0.02, 0.03, 0.04, 0.05]:
+        approx = cv2.approxPolyDP(cnt, perimeter * mult, True)
+        area_list.append(cv2.contourArea(np.array(approx)))
+    print('original area:', area)
+    print('other area:', area_list)
+
+
 def get_profile(img_bin: np.array):
     img_b = img_bin.copy()
 
@@ -38,20 +49,40 @@ def get_profile(img_bin: np.array):
 
     # searching for biggerst contour
     biggest_c = -1
-    best_c = None
+    best_c, best_cnt = None, None
+    best_c2 = None
     for cnt in contours_:
         x, y, w, h = cv2.boundingRect(cnt)
 
-        # max_area = cv2.contourArea(cnt)
+        area = cv2.contourArea(cnt)
         perimeter = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, perimeter*0.05, True)
+        if area > perimeter*3:
+            continue
+
+        approx = cv2.approxPolyDP(cnt, perimeter*0.01, True)
 
         if w > 0.9*img_bin.shape[1] or h > 0.9*img_bin.shape[0]:
             continue
 
         if w + h > biggest_c:
+            if w < 0.2*img_bin.shape[1] or h < 0.2*img_bin.shape[0]:
+                pass
+            best_c2 = best_c.copy() if best_c is not None else None
             biggest_c = w + h
             # best_c = cnt.copy()
             best_c = approx.copy()
+            best_cnt = cnt.copy()
+
+    # get_best_approx(best_cnt)
+    if best_c2 is not None:
+        tmp_bin = np.zeros(img_bin.shape, np.uint8)
+        tmp_bin[:, :] = 255
+
+        cv2.drawContours(tmp_bin, [best_c], -1, (0,), -1)
+        cv2.drawContours(tmp_bin, [best_c2], -1, (0,), -1)
+
+        cv2.imshow('fff', tmp_bin)
+        cv2.waitKey()
+
 
     return best_c
