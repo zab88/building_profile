@@ -5,8 +5,8 @@ from sklearn.externals import joblib
 
 
 def get_8_parts(img_bin: np.array) -> list:
-    image_, contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    # contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # image_, contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     res = []
     for cnt in contours_:
@@ -49,8 +49,8 @@ def get_profile(img_bin: np.array):
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     # img_b = cv2.erode(img_b, kernel)
 
-    image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    # contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # searching for biggerst contour
     biggest_c = -1
@@ -95,8 +95,8 @@ def get_profile(img_bin: np.array):
         # cv2.waitKey()
 
         # if merging correct, only one contour should be
-        image_, contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        # contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # image_, contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         # print(len(contours_))
         if len(contours_) == 2:
@@ -120,8 +120,8 @@ def get_digit(img_bin: np.array):
     if np.count_nonzero(255 - has_something) < hh+ww:
         return None
 
-    image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    # contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     found_digits = []
     for cnt in contours_:
@@ -155,10 +155,12 @@ def get_digit(img_bin: np.array):
         b_part = max(w//2, h//2) + 1
         pt1 = max(0, int(x+w//2 - b_part))
         pt2 = max(0, int(y+h//2 - b_part))
-        roi = img_bin_black[pt2:pt2 + b_part, pt1:pt1 + b_part]
+        roi = img_bin_black[pt2:pt2 + 2*b_part, pt1:pt1 + 2*b_part]
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
         roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
+        # cv2.imshow('fff2', roi)
+        # cv2.waitKey()
 
         # Calculate the HOG features
         roi_hog_fd = hog(roi, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1))
