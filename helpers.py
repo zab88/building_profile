@@ -64,7 +64,7 @@ def get_profile(img_bin: np.array):
         if area > perimeter*3:
             continue
 
-        approx = cv2.approxPolyDP(cnt, perimeter*0.01, True)
+        approx = cv2.approxPolyDP(cnt, perimeter*0.005, True)
 
         if w > 0.78*img_bin.shape[1] or h > 0.9*img_bin.shape[0]:
             continue
@@ -107,6 +107,15 @@ def get_profile(img_bin: np.array):
 
 
     return best_c
+
+
+def cnt2res(cnt):
+    cc = cnt.copy()
+    print('asdfss')
+
+    perimeter = cv2.arcLength(cnt, True)
+    approx = cv2.approxPolyDP(cnt, perimeter * 0.15, True)
+    print('sss')
 
 
 # clf = joblib.load("data/digits_cls_lgbm.pkl")

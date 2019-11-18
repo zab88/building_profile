@@ -1,13 +1,13 @@
 import cv2
 import numpy as np
-from helpers import get_8_parts, get_profile, get_digit
+from helpers import get_8_parts, get_profile, get_digit, cnt2res
 
 
 # img_file_in = 'imgs/ProfileReader1.jpg'
 img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
-img_file_in = 'imgs/Images/Sheet 4 -zoomed in and clipped.jpg'
-img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
-img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
+# img_file_in = 'imgs/Images/Sheet 4 -zoomed in and clipped.jpg'
+# img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
+# img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
 img_origin = cv2.imread(img_file_in)
 img_gray = cv2.imread(img_file_in, 0)
 
@@ -32,7 +32,12 @@ for r in rec_8:
     best_c = get_profile(img_bin[y:y+h, x:x+w])
     if best_c is None:
         continue
-    cv2.drawContours(img_dd, [best_c], -1, (0, 255, 0), 3)
+    cv2.drawContours(img_dd, [best_c], -1, (0, 255, 0), 1)
+
+    # cnt2res(best_c)
+    hull = cv2.convexHull(best_c)
+    cv2.drawContours(img_dd, hull, -1, (0, 0, 255), 3)
+
     # cv2.imshow('asdfg', img_dd)
     # cv2.waitKey()
     img_dd = img_draw[y:y + h, x:x + w, :]
