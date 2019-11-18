@@ -3,7 +3,8 @@ import numpy as np
 from helpers import get_8_parts, get_profile, get_digit
 
 
-img_file_in = 'imgs/ProfileReader1.jpg'
+# img_file_in = 'imgs/ProfileReader1.jpg'
+img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
 img_origin = cv2.imread(img_file_in)
 img_gray = cv2.imread(img_file_in, 0)
 
@@ -37,7 +38,7 @@ for r in rec_8:
         print(d)
         cv2.rectangle(img_dd, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0, 0, 128), 1)
         # cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]), cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
-        cv2.putText(img_dd, str(int(d[4])), (d[0], d[1]+d[3]), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 100, 100), 1)
+        cv2.putText(img_dd, str(int(d[4])), (d[0], d[1]), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 100, 100), 1)
 
 
 cv2.imshow('asdf', img_draw)

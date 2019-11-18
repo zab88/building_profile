@@ -15,7 +15,7 @@ def get_8_parts(img_bin: np.array) -> list:
         if w > 0.4 * img_bin.shape[1] or w < 0.3 * img_bin.shape[1]:
             continue
 
-        if h > 0.2 * img_bin.shape[0] or h < 0.12 * img_bin.shape[0]:
+        if h > 0.22 * img_bin.shape[0] or h < 0.12 * img_bin.shape[0]:
             continue
 
         res.append([x, y, w, h])
@@ -66,7 +66,7 @@ def get_profile(img_bin: np.array):
 
         approx = cv2.approxPolyDP(cnt, perimeter*0.01, True)
 
-        if w > 0.9*img_bin.shape[1] or h > 0.9*img_bin.shape[0]:
+        if w > 0.78*img_bin.shape[1] or h > 0.9*img_bin.shape[0]:
             continue
         if w < 0.2 * img_bin.shape[1] and h < 0.2 * img_bin.shape[0]:
             continue
@@ -139,6 +139,29 @@ def get_digit(img_bin: np.array):
         if w < 3 or h < 7:
             continue
         if w < 0.05 * img_bin.shape[1] and h < 0.05 * img_bin.shape[0]:
+            continue
+
+        is_found_near = False
+        for cnt2 in contours_:
+            x2, y2, w2, h2 = cv2.boundingRect(cnt2)
+            if x == x2 and y == y2:
+                continue
+            if w2 > 0.2 * img_bin.shape[1] or h2 > 0.2 * img_bin.shape[0]:
+                continue
+            if w2 < 3 or h2 < 7:
+                continue
+            if w2 < 0.05 * img_bin.shape[1] and h2 < 0.05 * img_bin.shape[0]:
+                continue
+
+            area2 = cv2.contourArea(cnt2)
+            perimeter2 = cv2.arcLength(cnt2, True)
+            if area2 > perimeter2 * 3:
+                continue
+
+            if (x-x2)*(x-x2) + (y-y2)*(y-y2) < h*h:
+                is_found_near = True
+                break
+        if not is_found_near:
             continue
 
         # Make the rectangular region around the digit
