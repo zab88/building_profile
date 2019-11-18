@@ -6,6 +6,7 @@ from sklearn.svm import LinearSVC
 import numpy as np
 from collections import Counter
 from scipy.io import loadmat
+from lightgbm import LGBMClassifier
 
 # Load the dataset
 # dataset = datasets.fetch_mldata("MNIST Original")
@@ -30,10 +31,11 @@ hog_features = np.array(list_hog_fd, 'float64')
 print("Count of digits in dataset", Counter(labels))
 
 # Create an linear SVM object
-clf = LinearSVC()
+# clf = LinearSVC()
+clf = LGBMClassifier()
 
 # Perform the training
 clf.fit(hog_features, labels)
 
 # Save the classifier
-joblib.dump(clf, "../data/digits_cls.pkl", compress=3)
+joblib.dump(clf, "../data/digits_cls_lgbm.pkl", compress=3)

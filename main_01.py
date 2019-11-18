@@ -5,6 +5,9 @@ from helpers import get_8_parts, get_profile, get_digit
 
 # img_file_in = 'imgs/ProfileReader1.jpg'
 img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
+img_file_in = 'imgs/Images/Sheet 4 -zoomed in and clipped.jpg'
+img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
+img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
 img_origin = cv2.imread(img_file_in)
 img_gray = cv2.imread(img_file_in, 0)
 

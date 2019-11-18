@@ -109,6 +109,7 @@ def get_profile(img_bin: np.array):
     return best_c
 
 
+# clf = joblib.load("data/digits_cls_lgbm.pkl")
 clf = joblib.load("data/digits_cls.pkl")
 def get_digit(img_bin: np.array):
     img_b = img_bin.copy()
@@ -120,6 +121,10 @@ def get_digit(img_bin: np.array):
     if np.count_nonzero(255 - has_something) < hh+ww:
         return None
 
+    b_w = 5
+    # img_b = cv2.copyMakeBorder(img_b, b_w, b_w, b_w, b_w, cv2.BORDER_CONSTANT, value=(255,))
+    # cv2.imshow('bwbw', img_b)
+    # cv2.waitKey()
     # image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -129,7 +134,7 @@ def get_digit(img_bin: np.array):
 
         area = cv2.contourArea(cnt)
         perimeter = cv2.arcLength(cnt, True)
-        if area > perimeter * 3:
+        if area > perimeter * 5:
             continue
 
         approx = cv2.approxPolyDP(cnt, perimeter * 0.01, True)
@@ -158,7 +163,7 @@ def get_digit(img_bin: np.array):
             if area2 > perimeter2 * 3:
                 continue
 
-            if (x-x2)*(x-x2) + (y-y2)*(y-y2) < h*h:
+            if (x-x2)*(x-x2) + (y-y2)*(y-y2) < h*h*1.5:
                 is_found_near = True
                 break
         if not is_found_near:
