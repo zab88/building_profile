@@ -118,7 +118,8 @@ def cnt2res(cnt):
     print('sss')
 
 
-def get_key_points(hull_points):
+def get_key_points(best_c, img_bin):
+    hull_points = cv2.convexHull(best_c)
     hp = hull_points.copy()
     points_to_del = []
     # for k, el in np.ndenumerate(hull_points[0]):
@@ -149,8 +150,36 @@ def get_key_points(hull_points):
                 close_points.append(k)
         hp = np.delete(hp, close_points, 0)
 
+    # making right order
+    # for k, el in enumerate(hp):
+    #     k_1 = (k + 1) % hp.shape[0]
+    #     tmp_bin = np.zeros(img_bin.shape, np.uint8)
+    #     tmp_bin[:, :] = 255
+    #     cv2.drawContours(tmp_bin, [best_c], -1, (0,), -1)
+    #     zero_before = cv2.countNonZero(tmp_bin)
+    #     cv2.line(tmp_bin, (hp[k][0][1], hp[k][0][0]), (hp[k_1][0][1], hp[k_1][0][0]), (155,), 3)
+    #
+    #     cv2.imshow('fsfsd', tmp_bin)
+    #     cv2.waitKey()
+
+
     # print(hull_points[k], 'gg')
     return hp
+
+
+def get_angles(points):
+    angles = []
+    for k, el in enumerate(points):
+        k_1 = (k + 1) % points.shape[0]
+        k_2 = (k + 2) % points.shape[0]
+
+        u = points[k] - points[k_1]
+        v = points[k_1] - points[k_2]
+        c = np.dot(u[0], v[0]) / np.linalg.norm(u) / np.linalg.norm(v)
+        angle = np.arccos(np.clip(c, -1, 1))
+        angles.append(np.degrees(angle))
+
+    return angles
 
 
 # clf = joblib.load("data/digits_cls_lgbm.pkl")

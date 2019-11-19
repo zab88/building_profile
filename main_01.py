@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points
+from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points, get_angles
 
 
 # img_file_in = 'imgs/ProfileReader1.jpg'
@@ -37,8 +37,10 @@ for r in rec_8:
     # cnt2res(best_c)
     hull = cv2.convexHull(best_c)
     cv2.drawContours(img_dd, hull, -1, (0, 0, 255), 3)
-    hull2 = get_key_points(hull)
-    cv2.drawContours(img_dd, hull2, -1, (100, 100, 255), 3)
+    hull2 = get_key_points(best_c, img_bin[y:y+h, x:x+w])
+    cv2.drawContours(img_dd, [hull2], -1, (100, 100, 255), 3)
+    angles = get_angles(hull2)
+    print("ANGLES", angles)
 
     # cv2.imshow('asdfg', img_dd)
     # cv2.waitKey()
@@ -51,7 +53,7 @@ for r in rec_8:
         cv2.putText(img_dd, str(int(d[4])), (d[0], d[1]), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 100, 100), 1)
 
 
-# cv2.imshow('asdf', img_draw)
-# cv2.waitKey()
-#
+cv2.imshow('asdf', img_draw)
+cv2.waitKey()
+
 cv2.imwrite('out.jpg', img_draw)
