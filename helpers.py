@@ -118,6 +118,31 @@ def cnt2res(cnt):
     print('sss')
 
 
+def get_key_points(hull_points):
+    hp = hull_points.copy()
+    points_to_del = []
+    # for k, el in np.ndenumerate(hull_points[0]):
+    for k, el in enumerate(hull_points):
+        k_1 = (k+1) % hull_points.shape[0]
+        k_2 = (k+2) % hull_points.shape[0]
+
+        d01 = np.linalg.norm(hull_points[k] - hull_points[k_1])
+        d02 = np.linalg.norm(hull_points[k] - hull_points[k_2])
+        d12 = np.linalg.norm(hull_points[k_1] - hull_points[k_2])
+
+        # print(k, d01, d02, d12)
+        if d01 > 5 and d12 > 5 and (d02*1.1 > d01+d12):
+            points_to_del.append(k_1)
+
+    print('AAAAAAAAAAA', points_to_del)
+    # for k in points_to_del:
+    # hp[0] = np.delete(hp[0], k)
+    hp = np.delete(hp, points_to_del, 0)
+
+    # print(hull_points[k], 'gg')
+    return hp
+
+
 # clf = joblib.load("data/digits_cls_lgbm.pkl")
 clf = joblib.load("data/digits_cls.pkl")
 def get_digit(img_bin: np.array):
