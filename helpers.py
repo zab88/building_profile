@@ -139,6 +139,16 @@ def get_key_points(hull_points):
     # hp[0] = np.delete(hp[0], k)
     hp = np.delete(hp, points_to_del, 0)
 
+    # need to delete too close points
+    for i in range(5):
+        close_points = []
+        for k, el in enumerate(hp):
+            k_1 = (k + 1) % hp.shape[0]
+            d01 = np.linalg.norm(hp[k] - hp[k_1])
+            if d01 < 5:
+                close_points.append(k)
+        hp = np.delete(hp, close_points, 0)
+
     # print(hull_points[k], 'gg')
     return hp
 
