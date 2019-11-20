@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from skimage.feature import hog
 from sklearn.externals import joblib
+from itertools import permutations
 
 
 def get_8_parts(img_bin: np.array) -> list:
@@ -64,7 +65,7 @@ def get_profile(img_bin: np.array):
         if area > perimeter*3:
             continue
 
-        approx = cv2.approxPolyDP(cnt, perimeter*0.005, True)
+        approx = cv2.approxPolyDP(cnt, perimeter*0.003, True)
 
         if w > 0.78*img_bin.shape[1] or h > 0.9*img_bin.shape[0]:
             continue
@@ -135,7 +136,7 @@ def get_key_points(best_c, img_bin):
         if d01 > 5 and d12 > 5 and (d02*1.1 > d01+d12):
             points_to_del.append(k_1)
 
-    print('AAAAAAAAAAA', points_to_del)
+    print('points to delete', points_to_del)
     # for k in points_to_del:
     # hp[0] = np.delete(hp[0], k)
     hp = np.delete(hp, points_to_del, 0)
@@ -151,20 +152,60 @@ def get_key_points(best_c, img_bin):
         hp = np.delete(hp, close_points, 0)
 
     # making right order
-    # for k, el in enumerate(hp):
-    #     k_1 = (k + 1) % hp.shape[0]
-    #     tmp_bin = np.zeros(img_bin.shape, np.uint8)
-    #     tmp_bin[:, :] = 255
-    #     cv2.drawContours(tmp_bin, [best_c], -1, (0,), -1)
-    #     zero_before = cv2.countNonZero(tmp_bin)
-    #     cv2.line(tmp_bin, (hp[k][0][1], hp[k][0][0]), (hp[k_1][0][1], hp[k_1][0][0]), (155,), 3)
-    #
-    #     cv2.imshow('fsfsd', tmp_bin)
-    #     cv2.waitKey()
+    tmp_bin = np.zeros(img_bin.shape, np.uint8)
+    tmp_bin[:, :] = 255
+    cv2.drawContours(tmp_bin, [best_c], -1, (0,), -1)
+    # make all possible variants
+    all_combo = permutations(hp, hp.shape[0])
+    best_combo, max_zero = None, -1
+    for combo in all_combo:
+        tmp_bin_c = tmp_bin.copy()
+        zero_before = cv2.countNonZero(tmp_bin_c)
+        print(combo)
+        for k, el in enumerate(combo):
+            if k + 1 >= len(combo):
+                continue
+            # k_1 = (k + 1) % hp.shape[0]
+            k_1 = (k + 1) % len(combo)
+            # cv2.line(tmp_bin, (hp[k][0][1], hp[k][0][0]), (hp[k_1][0][1], hp[k_1][0][0]), (155,), 3)
+            # cv2.line(tmp_bin_c, (hp[k][0][0], hp[k][0][1]), (hp[k_1][0][0], hp[k_1][0][1]), (155,), 3)
+            cv2.line(tmp_bin_c, (combo[k][0][0], combo[k][0][1]), (combo[k_1][0][0], combo[k_1][0][1]), (155,), 5)
+        zero_after = cv2.countNonZero(tmp_bin_c)
+        if zero_after - zero_before > max_zero:
+            max_zero = zero_after - zero_before
+            best_combo = combo[:]
+        # cv2.imshow('fsfsd', tmp_bin_c)
+        # cv2.waitKey()
 
+    if False:
+        p_order = []
+        # np_order = np.array([])
+        np_order = []
+        for k_c, el_c in enumerate(best_c):
+            best_dd = 100000
+            best_k = None
+            for k_a, el_a in enumerate(hp):
+                # if not(el_c[0][0] == el_a[0][0] and el_c[0][1] == el_a[0][1]):
+                #     continue
+                dd = np.linalg.norm(hp[k_a] - best_c[k_c])
+                if dd < 10 and best_dd > dd:
+                    best_dd = dd
+                    best_k = k_a
+
+            # if best_k is not None and best_k not in p_order:
+            if best_k is not None:
+                p_order.append(best_k)
+                # np_order = np.append(np_order, hull_points[k_a], axis=0)
+                np_order.append(hp[best_k])
+        np_order = np.array(np_order, dtype=np.int)
+        print('P_ORDER', p_order)
+
+    # for i in range(hp.shape[0]):
 
     # print(hull_points[k], 'gg')
-    return hp
+    # return hp
+    return np.array(best_combo)
+    # return np_order
 
 
 def get_angles(points):

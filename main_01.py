@@ -3,8 +3,8 @@ import numpy as np
 from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points, get_angles
 
 
-# img_file_in = 'imgs/ProfileReader1.jpg'
-img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
+img_file_in = 'imgs/ProfileReader1.jpg'
+# img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 4 -zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
@@ -38,7 +38,12 @@ for r in rec_8:
     hull = cv2.convexHull(best_c)
     cv2.drawContours(img_dd, hull, -1, (0, 0, 255), 3)
     hull2 = get_key_points(best_c, img_bin[y:y+h, x:x+w])
-    cv2.drawContours(img_dd, [hull2], -1, (100, 100, 255), 3)
+    # cv2.drawContours(img_dd, [hull2], -1, (100, 100, 255), 3)
+    for k, el in enumerate(hull2):
+        if k + 1 == hull2.shape[0]:
+            break
+        # cv2.line(img_dd, (hull2[k][0][1], hull2[k][0][0]), (hull2[k+1][0][1], hull2[k+1][0][0]), (100, 100, 255), 3)
+        cv2.line(img_dd, (hull2[k][0][0], hull2[k][0][1]), (hull2[k+1][0][0], hull2[k+1][0][1]), (100, 100, 255), 3)
     angles = get_angles(hull2)
     print("ANGLES", angles)
 
@@ -47,7 +52,7 @@ for r in rec_8:
     img_dd = img_draw[y:y + h, x:x + w, :]
     all_digits = get_digit(img_bin[y:y + h, x:x + w])
     for d in all_digits:
-        print(d)
+        # print(d)
         cv2.rectangle(img_dd, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0, 0, 128), 1)
         # cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]), cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
         cv2.putText(img_dd, str(int(d[4])), (d[0], d[1]), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 100, 100), 1)
