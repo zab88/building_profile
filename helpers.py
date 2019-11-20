@@ -160,18 +160,33 @@ def get_key_points(best_c, img_bin):
     best_combo, max_zero = None, -1
     for combo in all_combo:
         tmp_bin_c = tmp_bin.copy()
+        not_allowed = False
         zero_before = cv2.countNonZero(tmp_bin_c)
         print(combo)
         for k, el in enumerate(combo):
             if k + 1 >= len(combo):
                 continue
+            # check posibility
+            td_ = 5
+            tmp_bin2 = tmp_bin.copy()
+            patch = tmp_bin2[
+                (combo[k][0][1]+combo[k+1][0][1])//2 - td_:(combo[k][0][1] + combo[k+1][0][1])//2 + td_,
+                (combo[k][0][0]+combo[k+1][0][0])//2-td_:(combo[k][0][0]+combo[k+1][0][0])//2+td_
+            ]
+            # patch[:, :] = 80
+            # cv2.imshow('bxc', tmp_bin2)
+            # cv2.waitKey()
+            if cv2.countNonZero(patch) >= patch.shape[0] * patch.shape[1]:
+                not_allowed = True
+                break
+
             # k_1 = (k + 1) % hp.shape[0]
             k_1 = (k + 1) % len(combo)
             # cv2.line(tmp_bin, (hp[k][0][1], hp[k][0][0]), (hp[k_1][0][1], hp[k_1][0][0]), (155,), 3)
             # cv2.line(tmp_bin_c, (hp[k][0][0], hp[k][0][1]), (hp[k_1][0][0], hp[k_1][0][1]), (155,), 3)
             cv2.line(tmp_bin_c, (combo[k][0][0], combo[k][0][1]), (combo[k_1][0][0], combo[k_1][0][1]), (155,), 5)
         zero_after = cv2.countNonZero(tmp_bin_c)
-        if zero_after - zero_before > max_zero:
+        if not_allowed is False and zero_after - zero_before > max_zero:
             max_zero = zero_after - zero_before
             best_combo = combo[:]
         # cv2.imshow('fsfsd', tmp_bin_c)
