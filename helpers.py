@@ -167,7 +167,7 @@ def get_key_points(best_c, img_bin):
             if k + 1 >= len(combo):
                 continue
             # check posibility
-            td_ = 5
+            td_ = 8
             tmp_bin2 = tmp_bin.copy()
             patch = tmp_bin2[
                 (combo[k][0][1]+combo[k+1][0][1])//2 - td_:(combo[k][0][1] + combo[k+1][0][1])//2 + td_,
@@ -228,6 +228,8 @@ def get_angles(points):
     for k, el in enumerate(points):
         k_1 = (k + 1) % points.shape[0]
         k_2 = (k + 2) % points.shape[0]
+        if k + 2 >= points.shape[0]:
+            continue
 
         u = points[k] - points[k_1]
         v = points[k_1] - points[k_2]
