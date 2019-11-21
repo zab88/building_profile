@@ -21,6 +21,8 @@ def get_8_parts(img_bin: np.array) -> list:
 
         res.append([x, y, w, h])
 
+    res.sort(key=lambda x: x[0]+2*x[1])
+
     return res
 
 

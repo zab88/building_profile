@@ -4,7 +4,7 @@ from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points
 
 
 img_file_in = 'imgs/ProfileReader1.jpg'
-# img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
+img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 4 -zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
