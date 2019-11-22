@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points, get_angles
+from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points, get_angles, get_digit_groups
 
 
 img_file_in = 'imgs/ProfileReader1.jpg'
@@ -57,6 +57,16 @@ for r in rec_8:
         # cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]), cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
         cv2.putText(img_dd, str(int(d[4])), (d[0], d[1]), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 100, 100), 1)
 
+    grouped_digit = get_digit_groups(all_digits, hull2)
+    for g_d in grouped_digit:
+        if len(g_d) < 1:
+            continue
+        min_x = min([d[0] for d in g_d])
+        max_x = max([d[0]+d[2] for d in g_d])
+        min_y = min([d[1] for d in g_d])
+        max_y = max([d[1]+d[3] for d in g_d])
+        # cv2.rectangle(img_dd, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0, 0, 0), 2)
+        cv2.rectangle(img_dd, (min_x, min_y), (max_x, max_y), (0, 0, 0), 2)
 
 cv2.imshow('asdf', img_draw)
 cv2.waitKey()

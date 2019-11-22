@@ -242,6 +242,22 @@ def get_angles(points):
     return angles
 
 
+def get_digit_groups(digits, profile):
+    # search 3 most close digits
+    d_groups = []
+    for k, p in enumerate(profile):
+        if k+1 >= len(profile):
+            continue
+        d_group = []
+        x_p, y_p = (p[0][1] + profile[k+1][0][1])//2, (p[0][0] + profile[k+1][0][0])//2
+        # digits.sort(key=lambda d: np.linalg.norm( [x_p, y_p],  )
+        for d in digits:
+            if (d[0] - x_p)*(d[0] - x_p) + (d[1] - y_p)*(d[1] - y_p) < 50:
+                d_group.append(d[:])
+        d_groups.append(d_group[:])
+    return d_groups
+
+
 # clf = joblib.load("data/digits_cls_lgbm.pkl")
 clf = joblib.load("data/digits_cls.pkl")
 def get_digit(img_bin: np.array):
