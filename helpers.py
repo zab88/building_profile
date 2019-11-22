@@ -138,9 +138,7 @@ def get_key_points(best_c, img_bin):
         if d01 > 5 and d12 > 5 and (d02*1.1 > d01+d12):
             points_to_del.append(k_1)
 
-    print('points to delete', points_to_del)
-    # for k in points_to_del:
-    # hp[0] = np.delete(hp[0], k)
+    #! print('points to delete', points_to_del)
     hp = np.delete(hp, points_to_del, 0)
 
     # need to delete too close points
@@ -164,7 +162,7 @@ def get_key_points(best_c, img_bin):
         tmp_bin_c = tmp_bin.copy()
         not_allowed = False
         zero_before = cv2.countNonZero(tmp_bin_c)
-        print(combo)
+        # print(combo)
         for k, el in enumerate(combo):
             if k + 1 >= len(combo):
                 continue
@@ -254,7 +252,8 @@ def get_digit_groups(digits, profile):
         for d in digits:
             if len(d_group) >= 3:
                 continue
-            if (d[0]+d[2]/2 - x_p)*(d[0]+d[2]/2 - x_p) + (d[1]+d[3]/2 - y_p)*(d[1]+d[3]/2 - y_p) < 2300:
+            #if (d[0]+d[2]/2 - x_p)*(d[0]+d[2]/2 - x_p) + (d[1]+d[3]/2 - y_p)*(d[1]+d[3]/2 - y_p) < 2300:
+            if pow(d[0]+d[2]/2 - x_p, 2) + pow(d[1]+d[3]/2 - y_p, 2) < 2300:
             # if (d[1] - x_p)*(d[1] - x_p) + (d[0] - y_p)*(d[0] - y_p) < 50:
                 if len(d_group) < 1:
                     d_group.append(d[:])
