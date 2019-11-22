@@ -249,11 +249,29 @@ def get_digit_groups(digits, profile):
         if k+1 >= len(profile):
             continue
         d_group = []
-        x_p, y_p = (p[0][1] + profile[k+1][0][1])//2, (p[0][0] + profile[k+1][0][0])//2
+        y_p, x_p = (p[0][1] + profile[k+1][0][1])//2, (p[0][0] + profile[k+1][0][0])//2
         # digits.sort(key=lambda d: np.linalg.norm( [x_p, y_p],  )
         for d in digits:
-            if (d[0] - x_p)*(d[0] - x_p) + (d[1] - y_p)*(d[1] - y_p) < 50:
-                d_group.append(d[:])
+            if len(d_group) >= 3:
+                continue
+            if (d[0]+d[2]/2 - x_p)*(d[0]+d[2]/2 - x_p) + (d[1]+d[3]/2 - y_p)*(d[1]+d[3]/2 - y_p) < 2300:
+            # if (d[1] - x_p)*(d[1] - x_p) + (d[0] - y_p)*(d[0] - y_p) < 50:
+                if len(d_group) < 1:
+                    d_group.append(d[:])
+                elif len(d_group) == 1:
+                    # if abs(d_group[0][0] - d[0]) < d[2] + d_group[0][2]:
+                    #     d_group.append(d[:])
+                    if abs(d_group[0][1] - d[1]) < (d[3] + d_group[0][3])*0.7:
+                        d_group.append(d[:])
+                    # d_group.append(d[:])
+                else:
+                    # check
+                    # if min(abs(d_group[0][0] - d[0]), abs(d_group[1][0] - d[0])) < d[2] + d_group[0][2]:
+                    #     d_group.append(d[:])
+                    if min(abs(d_group[0][1] - d[1]), abs(d_group[1][1] - d[1])) < (d[3] + d_group[0][3])*0.6:
+                        d_group.append(d[:])
+                    # d_group.append(d[:])
+                    # continue
         d_groups.append(d_group[:])
     return d_groups
 
