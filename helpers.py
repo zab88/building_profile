@@ -124,22 +124,6 @@ def cnt2res(cnt):
 def get_key_points(best_c, img_bin):
     hull_points = cv2.convexHull(best_c)
     hp = hull_points.copy()
-    points_to_del = []
-    # for k, el in np.ndenumerate(hull_points[0]):
-    for k, el in enumerate(hull_points):
-        k_1 = (k+1) % hull_points.shape[0]
-        k_2 = (k+2) % hull_points.shape[0]
-
-        d01 = np.linalg.norm(hull_points[k] - hull_points[k_1])
-        d02 = np.linalg.norm(hull_points[k] - hull_points[k_2])
-        d12 = np.linalg.norm(hull_points[k_1] - hull_points[k_2])
-
-        # print(k, d01, d02, d12)
-        if d01 > 5 and d12 > 5 and (d02*1.1 > d01+d12):
-            points_to_del.append(k_1)
-
-    #! print('points to delete', points_to_del)
-    hp = np.delete(hp, points_to_del, 0)
 
     # need to delete too close points
     for i in range(5):
@@ -147,9 +131,41 @@ def get_key_points(best_c, img_bin):
         for k, el in enumerate(hp):
             k_1 = (k + 1) % hp.shape[0]
             d01 = np.linalg.norm(hp[k] - hp[k_1])
-            if d01 < 5:
+            if d01 < 6:
                 close_points.append(k)
+                # hp[k_1] = (hp[k]+hp[k_1])//2
+                hp[k_1] = (hp[k]+hp[k])//2
         hp = np.delete(hp, close_points, 0)
+    hull_points = hp.copy()
+    #return hp
+
+    # points_to_del = []
+    # for k, el in np.ndenumerate(hull_points[0]):
+
+    def iterative_deletion(hull_points):
+        for k, el in enumerate(hull_points):
+            if k+2 >= hull_points.shape[0]:
+                continue
+            k_1 = (k+1) % hull_points.shape[0]
+            k_2 = (k+2) % hull_points.shape[0]
+
+            d01 = np.linalg.norm(hull_points[k] - hull_points[k_1])
+            d02 = np.linalg.norm(hull_points[k] - hull_points[k_2])
+            d12 = np.linalg.norm(hull_points[k_1] - hull_points[k_2])
+
+            # print(k, d01, d02, d12)
+            if d01 > 5 and d12 > 5 and (d02*1.15 > d01+d12):
+                return k_1
+                #points_to_del.append(k_1)
+        return None
+
+    i_d = iterative_deletion(hull_points)
+    while i_d is not None:
+        hull_points = np.delete(hull_points, [i_d], 0)
+        i_d = iterative_deletion(hull_points)
+    hp = hull_points.copy()
+
+    # return hp
 
     # making right order
     tmp_bin = np.zeros(img_bin.shape, np.uint8)
@@ -231,7 +247,7 @@ def get_angles(points):
         if k + 2 >= points.shape[0]:
             continue
 
-        u = points[k] - points[k_1]
+        u = - points[k] + points[k_1]
         v = points[k_1] - points[k_2]
         c = np.dot(u[0], v[0]) / np.linalg.norm(u) / np.linalg.norm(v)
         angle = np.arccos(np.clip(c, -1, 1))

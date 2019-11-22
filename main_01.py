@@ -42,11 +42,14 @@ for r_num, r in enumerate(rec_8):
     cv2.drawContours(img_dd, hull, -1, (0, 0, 255), 3)
     hull2 = get_key_points(best_c, img_bin[y:y+h, x:x+w])
     # cv2.drawContours(img_dd, [hull2], -1, (100, 100, 255), 3)
+    if not len(hull2.shape):
+        continue
+    # print(hull2.shape[0])
     for k, el in enumerate(hull2):
         if k + 1 == hull2.shape[0]:
             break
         # cv2.line(img_dd, (hull2[k][0][1], hull2[k][0][0]), (hull2[k+1][0][1], hull2[k+1][0][0]), (100, 100, 255), 3)
-        cv2.line(img_dd, (hull2[k][0][0], hull2[k][0][1]), (hull2[k+1][0][0], hull2[k+1][0][1]), (100, 100, 255), 3)
+        cv2.line(img_dd, (hull2[k][0][0], hull2[k][0][1]), (hull2[k+1][0][0], hull2[k+1][0][1]), (100, 100, 255), 2)
     angles = get_angles(hull2)
     res_all_angles = [int(round(el/45))*45 for el in angles]
     # print("ANGLES", angles)
