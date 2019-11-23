@@ -137,12 +137,13 @@ def get_key_points(best_c, img_bin):
                 hp[k_1] = (hp[k]+hp[k])//2
         hp = np.delete(hp, close_points, 0)
     hull_points = hp.copy()
-    #return hp
+    # return hp
 
     # points_to_del = []
     # for k, el in np.ndenumerate(hull_points[0]):
 
     def iterative_deletion(hull_points):
+        triangle_bad = {}
         for k, el in enumerate(hull_points):
             if k+2 >= hull_points.shape[0]:
                 continue
@@ -154,13 +155,23 @@ def get_key_points(best_c, img_bin):
             d12 = np.linalg.norm(hull_points[k_1] - hull_points[k_2])
 
             # print(k, d01, d02, d12)
-            if d01 > 5 and d12 > 5 and (d02*1.15 > d01+d12):
-                return k_1
+            if d01 > 5 and d12 > 5 and (d02*1.05 > d01+d12):
+                triangle_bad[k_1] = (d01+d12) / d02
+                # return k_1
                 #points_to_del.append(k_1)
+        if len(triangle_bad):
+            sorted_x = sorted(triangle_bad.items(), key=lambda kv: kv[1])
+            return sorted_x[0][0]
         return None
 
     i_d = iterative_deletion(hull_points)
     while i_d is not None:
+        # tmp_bin = np.zeros(img_bin.shape, np.uint8)
+        # tmp_bin[:, :] = 255
+        # cv2.drawContours(tmp_bin, hull_points, -1, (0,), 2)
+        # cv2.imshow('fsw', tmp_bin)
+        # cv2.waitKey()
+
         hull_points = np.delete(hull_points, [i_d], 0)
         i_d = iterative_deletion(hull_points)
     hp = hull_points.copy()
@@ -369,6 +380,8 @@ def get_digit(img_bin: np.array):
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
         roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
+        # b_ww = 4
+        # roi = cv2.copyMakeBorder(roi, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
 
