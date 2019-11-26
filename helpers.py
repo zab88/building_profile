@@ -302,9 +302,30 @@ def get_digit_groups(digits, profile):
     return d_groups
 
 
+def get_digit_groups2(digits, profile):
+    tmp_bin = np.zeros((1600, 1600), np.uint8)
+    tmp_bin[:, :] = 255
+    for d in digits:
+        cv2.rectangle(tmp_bin, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0,), -1)
+    kernel_size = int(np.median([d[3] for d in digits]))
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    tmp_bin = cv2.erode(tmp_bin, kernel)
+    tmp_bin = cv2.dilate(tmp_bin, kernel)
+
+    contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    found_groups = []
+    for cnt in contours_:
+        x, y, w, h = cv2.boundingRect(cnt)
+        if w > tmp_bin.shape[1]*0.9 or h > tmp_bin.shape[0]*0.9:
+            continue
+        found_groups.append([[x, y, w, h, 8]])
+    return found_groups
+
+
 # clf = joblib.load("data/digits_cls_lgbm.pkl")
 clf = joblib.load("data/digits_cls.pkl")
-# clf = joblib.load("data/digits_cls_bin.pkl")
+# clf = joblib.load("data/digits_cls_bin_lgbm.pkl")
 def get_digit(img_bin: np.array, img_gray: np.array):
     img_b = img_bin.copy()
     # img_b = img_bin
@@ -360,7 +381,7 @@ def get_digit(img_bin: np.array, img_gray: np.array):
 
             area2 = cv2.contourArea(cnt2)
             perimeter2 = cv2.arcLength(cnt2, True)
-            if area2 > perimeter2 * 3:
+            if area2 > perimeter2 * 5:
                 continue
 
             if (x-x2)*(x-x2) + (y-y2)*(y-y2) < h*h*1.5:
@@ -398,10 +419,10 @@ def get_digit(img_bin: np.array, img_gray: np.array):
         roi_gray = img_bin_gray[pt2:pt2 + 2*b_part, pt1:pt1 + 2*b_part]
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
-        roi = cv2.resize(roi, (20, 20), interpolation=cv2.INTER_AREA)
+        roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
         roi_gray = cv2.resize(roi_gray, (28, 28), interpolation=cv2.INTER_AREA)
-        b_ww = 4
-        roi = cv2.copyMakeBorder(roi, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
+        b_ww = 2
+        # roi = cv2.copyMakeBorder(roi, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
         # roi_gray = cv2.copyMakeBorder(roi_gray, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
