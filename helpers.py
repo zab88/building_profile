@@ -304,7 +304,8 @@ def get_digit_groups(digits, profile):
 
 # clf = joblib.load("data/digits_cls_lgbm.pkl")
 clf = joblib.load("data/digits_cls.pkl")
-def get_digit(img_bin: np.array):
+# clf = joblib.load("data/digits_cls_bin.pkl")
+def get_digit(img_bin: np.array, img_gray: np.array):
     img_b = img_bin.copy()
     # img_b = img_bin
 
@@ -330,7 +331,7 @@ def get_digit(img_bin: np.array):
         if area > perimeter * 5:
             continue
 
-        approx = cv2.approxPolyDP(cnt, perimeter * 0.01, True)
+        # approx = cv2.approxPolyDP(cnt, perimeter * 0.01, True)
 
         if w > 0.2 * img_bin.shape[1] or h > 0.2 * img_bin.shape[0]:
             continue
@@ -340,6 +341,7 @@ def get_digit(img_bin: np.array):
             continue
 
         is_found_near = False
+        is_inner = False
         for cnt2 in contours_:
             x2, y2, w2, h2 = cv2.boundingRect(cnt2)
             if x == x2 and y == y2:
@@ -351,6 +353,11 @@ def get_digit(img_bin: np.array):
             if w2 < 0.05 * img_bin.shape[1] and h2 < 0.05 * img_bin.shape[0]:
                 continue
 
+            # check zero for inner contour
+            if x > x2 and y > y2 and x + w < x2 + w2 and y + h < y2 + h2:
+                is_inner = True
+                break
+
             area2 = cv2.contourArea(cnt2)
             perimeter2 = cv2.arcLength(cnt2, True)
             if area2 > perimeter2 * 3:
@@ -358,35 +365,50 @@ def get_digit(img_bin: np.array):
 
             if (x-x2)*(x-x2) + (y-y2)*(y-y2) < h*h*1.5:
                 is_found_near = True
-                break
+                # break
+
         if not is_found_near:
+            continue
+        if is_inner:
             continue
 
         # Make the rectangular region around the digit
         img_bin_black = img_bin.copy()
+        img_bin_gray = img_gray.copy()
         img_bin_black[0:y, :] = 255
         img_bin_black[y+h:, :] = 255
         img_bin_black[:, 0:x] = 255
         img_bin_black[:, x+w:] = 255
+
+        img_bin_gray[0:y, :] = 255
+        img_bin_gray[y + h:, :] = 255
+        img_bin_gray[:, 0:x] = 255
+        img_bin_gray[:, x + w:] = 255
         # print(x, y, w, h, img_bin.shape)
 
+        # print(x, y)  # 128 89
         # cv2.imshow('fff', img_bin_black)
+        # cv2.imshow('fff22', img_bin_gray)
         # cv2.waitKey()
 
         b_part = max(w//2, h//2) + 1
         pt1 = max(0, int(x+w//2 - b_part))
         pt2 = max(0, int(y+h//2 - b_part))
         roi = img_bin_black[pt2:pt2 + 2*b_part, pt1:pt1 + 2*b_part]
+        roi_gray = img_bin_gray[pt2:pt2 + 2*b_part, pt1:pt1 + 2*b_part]
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
-        roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
-        # b_ww = 4
-        # roi = cv2.copyMakeBorder(roi, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
+        roi = cv2.resize(roi, (20, 20), interpolation=cv2.INTER_AREA)
+        roi_gray = cv2.resize(roi_gray, (28, 28), interpolation=cv2.INTER_AREA)
+        b_ww = 4
+        roi = cv2.copyMakeBorder(roi, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
+        # roi_gray = cv2.copyMakeBorder(roi_gray, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
 
         # Calculate the HOG features
         roi_hog_fd = hog(roi, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1))
+        # roi_hog_fd = hog(roi_gray, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1))
         nbr = clf.predict(np.array([roi_hog_fd], 'float64'))
 
         found_digits.append([x, y, w, h, nbr[0]])

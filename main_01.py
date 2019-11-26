@@ -3,11 +3,13 @@ import numpy as np
 from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points, get_angles, get_digit_groups
 
 
-section_names = ['AB', 'BC', 'CD', 'DE', 'EF', 'FG', 'GH', 'HI', 'IJ', 'JK']
-angle_names = ['<B', '<C', '<D', 'E', 'F', 'G', 'H', 'I', 'J']
+# section_names = ['AB', 'BC', 'CD', 'DE', 'EF', 'FG', 'GH', 'HI', 'IJ', 'JK']
+section_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+angle_names = ['AB', 'BC', 'CD', 'DE', 'EF', 'FG', 'GH', 'HI', 'IJ']
 
-img_file_in = 'imgs/ProfileReader1.jpg'
-img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
+# img_file_in = 'imgs/ProfileReader1.jpg'
+# img_file_in = 'imgs/Images/Sheet 3 - zoomed in and clipped.jpg'
+img_file_in = 'imgs/Sheet 3 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 4 -zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
@@ -57,10 +59,11 @@ for r_num, r in enumerate(rec_8):
     # cv2.imshow('asdfg', img_dd)
     # cv2.waitKey()
     img_dd = img_draw[y:y + h, x:x + w, :]
-    all_digits = get_digit(img_bin[y:y + h, x:x + w])
+    all_digits = get_digit(img_bin[y:y + h, x:x + w], img_gray[y:y + h, x:x + w])
+    # all_digits = get_digit(img_gray[y:y + h, x:x + w])
     for d in all_digits:
         # print(d)
-        #! cv2.rectangle(img_dd, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0, 0, 128), 1)
+        cv2.rectangle(img_dd, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0, 0, 128), 1)
         # cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]), cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
         cv2.putText(img_dd, str(int(d[4])), (d[0], d[1]), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 100, 100), 1)
 
@@ -74,7 +77,7 @@ for r_num, r in enumerate(rec_8):
         min_y = min([d[1] for d in g_d])
         max_y = max([d[1]+d[3] for d in g_d])
         # cv2.rectangle(img_dd, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0, 0, 0), 2)
-        cv2.rectangle(img_dd, (min_x, min_y), (max_x, max_y), (0, 0, 0), 2)
+        #! cv2.rectangle(img_dd, (min_x, min_y), (max_x, max_y), (0, 0, 0), 2)
         g_d.sort(key=lambda el: -el[0])
         res_length = sum([el[4]*pow(10, k) for k, el in enumerate(g_d)])
         res_all_length.append(res_length)
