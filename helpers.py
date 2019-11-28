@@ -6,8 +6,10 @@ from itertools import permutations
 
 
 def get_8_parts(img_bin: np.array) -> list:
-    # image_, contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    try:
+        image_, contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    except BaseException as e:
+        contours_, hierarchy_ = cv2.findContours(img_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     res = []
     for cnt in contours_:
@@ -52,8 +54,10 @@ def get_profile(img_bin: np.array):
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     # img_b = cv2.erode(img_b, kernel)
 
-    # image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    try:
+        image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    except:
+        contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # searching for biggerst contour
     biggest_c = -1
@@ -98,8 +102,10 @@ def get_profile(img_bin: np.array):
         # cv2.waitKey()
 
         # if merging correct, only one contour should be
-        # image_, contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        try:
+            image_, contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        except:
+            contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         # print(len(contours_))
         if len(contours_) == 2:
@@ -312,7 +318,10 @@ def get_digit_groups2(digits, profile):
     tmp_bin = cv2.erode(tmp_bin, kernel)
     tmp_bin = cv2.dilate(tmp_bin, kernel)
 
-    contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    try:
+        image_, contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    except:
+        contours_, hierarchy_ = cv2.findContours(tmp_bin.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     found_groups = []
     for cnt in contours_:
@@ -340,8 +349,10 @@ def get_digit(img_bin: np.array, img_gray: np.array):
     # img_b = cv2.copyMakeBorder(img_b, b_w, b_w, b_w, b_w, cv2.BORDER_CONSTANT, value=(255,))
     # cv2.imshow('bwbw', img_b)
     # cv2.waitKey()
-    # image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    try:
+        image_, contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    except:
+        contours_, hierarchy_ = cv2.findContours(img_b.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     found_digits = []
     for cnt in contours_:
