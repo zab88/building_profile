@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points, get_angles, get_digit_groups
 from helpers import get_digit_groups2
+import sys
 
 
 # section_names = ['AB', 'BC', 'CD', 'DE', 'EF', 'FG', 'GH', 'HI', 'IJ', 'JK']
@@ -15,6 +16,10 @@ img_file_in = 'imgs/Sheet 3 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
 img_file_in = 'imgs/inn.jpg'
+
+if len(sys.argv) > 1 and sys.argv[1] == "run_php":
+    img_file_in = "uploads/in.jpg"
+
 img_origin = cv2.imread(img_file_in)
 img_gray = cv2.imread(img_file_in, 0)
 
@@ -93,7 +98,7 @@ for r_num, r in enumerate(rec_8):
     print(", ".join(["{}={}".format(angle_names[k], int(el)) for k, el in enumerate(res_all_angles)]))
     print('')
 
-cv2.imshow('asdf', img_draw)
-cv2.waitKey()
+# cv2.imshow('asdf', img_draw)
+# cv2.waitKey()
 
-cv2.imwrite('out.jpg', img_draw)
+cv2.imwrite('uploads/out.jpg', img_draw)
