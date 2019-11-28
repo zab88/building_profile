@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from helpers import get_8_parts, get_profile, get_digit, cnt2res, get_key_points, get_angles, get_digit_groups
+from helpers import get_digit_groups2
 
 
 # section_names = ['AB', 'BC', 'CD', 'DE', 'EF', 'FG', 'GH', 'HI', 'IJ', 'JK']
@@ -13,6 +14,7 @@ img_file_in = 'imgs/Sheet 3 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 4 -zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 5 - zoomed in and clipped.jpg'
 # img_file_in = 'imgs/Images/Sheet 6 - zoomed in and clipped.jpg'
+img_file_in = 'imgs/inn.jpg'
 img_origin = cv2.imread(img_file_in)
 img_gray = cv2.imread(img_file_in, 0)
 
@@ -68,6 +70,7 @@ for r_num, r in enumerate(rec_8):
         cv2.putText(img_dd, str(int(d[4])), (d[0], d[1]), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 100, 100), 1)
 
     grouped_digit = get_digit_groups(all_digits, hull2)
+    # grouped_digit2 = get_digit_groups2(all_digits, hull2)
     res_all_length = []
     for g_d in grouped_digit:
         if len(g_d) < 1:
@@ -77,8 +80,10 @@ for r_num, r in enumerate(rec_8):
         min_y = min([d[1] for d in g_d])
         max_y = max([d[1]+d[3] for d in g_d])
         # cv2.rectangle(img_dd, (d[0], d[1]), (d[0] + d[2], d[1] + d[3]), (0, 0, 0), 2)
-        #! cv2.rectangle(img_dd, (min_x, min_y), (max_x, max_y), (0, 0, 0), 2)
+        cv2.rectangle(img_dd, (min_x, min_y), (max_x, max_y), (0, 0, 0), 2)
         g_d.sort(key=lambda el: -el[0])
+        if g_d[0][4] != 5:
+            g_d[0][4] = 0
         res_length = sum([el[4]*pow(10, k) for k, el in enumerate(g_d)])
         res_all_length.append(res_length)
 
