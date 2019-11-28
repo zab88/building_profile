@@ -1,0 +1,7 @@
+numpy==1.13.3
+opencv_contrib_python==4.1.1.26
+lightgbm==2.2.3
+scikit_image==0.13.1
+scipy==0.19.1
+scikit_learn==0.21.3
+skimage==0.0
