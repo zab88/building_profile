@@ -83,7 +83,7 @@ def expand_training_data(images, labels):
     return expandedX, expandedY
 
 # features, labels = expand_training_data(features[:6000], labels[:6000])
-features, labels = expand_training_data(features, labels)
+# features, labels = expand_training_data(features, labels)
 
 # Extract the hog features
 list_hog_fd = []
@@ -111,4 +111,4 @@ clf.fit(hog_features, labels)
 
 # Save the classifier
 # joblib.dump(clf, "../data/digits_cls_bin_lgbm.pkl", compress=3)
-joblib.dump(clf, "../data/digits_cls_22.pkl", compress=3)
+joblib.dump(clf, "../data/digits_cls.pkl", compress=3)
