@@ -53,7 +53,7 @@ def expand_training_data(images, labels):
         #print(image)
         #time.sleep(3)
         # for i in range(9,):
-        for i in [-15, -12, -10, -7, -5, -2, 0, 2, 5, 7, 10, 12, 15]:
+        for i in [-15, -12, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 15]:
         # for i in [-15, 15]:
             # rotate the image with random degree
             # angle = np.random.randint(-20,20,1)
@@ -65,9 +65,9 @@ def expand_training_data(images, labels):
             new_img_ = ndimage.shift(new_img_, shift, cval=bg_value)
             # new_img_ = ndimage.shift(new_img,shift, cval=bg_value)
 
-            #code for saving some of these for visualization purpose only
-            image1 = (image*255) + (255 / 2.0)
-            new_img1 = (new_img_*255) + (255 / 2.0)
+            # code for saving some of these for visualization purpose only
+            # image1 = (image*255) + (255 / 2.0)
+            # new_img1 = (new_img_*255) + (255 / 2.0)
             new_img2 = np.reshape(new_img_,(28,28,1))
             #print(new_img1.shape)
 

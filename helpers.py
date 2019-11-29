@@ -360,7 +360,7 @@ def get_digit_groups2(digits, profile):
 
 
 # clf = joblib.load("data/digits_cls_lgbm.pkl")
-clf = joblib.load("data/digits_cls.pkl")
+clf = joblib.load("data/digits_cls_22.pkl")
 # clf = load_model('digits/dl/final_model.h5')
 # clf = joblib.load("data/digits_cls_bin_lgbm.pkl")
 def get_digit(img_bin: np.array, img_gray: np.array):
