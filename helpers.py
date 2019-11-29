@@ -3,6 +3,7 @@ import numpy as np
 from skimage.feature import hog
 from sklearn.externals import joblib
 from itertools import permutations
+# from keras.models import load_model
 
 
 def get_8_parts(img_bin: np.array) -> list:
@@ -325,15 +326,26 @@ def get_digit_groups2(digits, profile):
 
     found_groups = []
     for cnt in contours_:
+        g_d = []
         x, y, w, h = cv2.boundingRect(cnt)
         if w > tmp_bin.shape[1]*0.9 or h > tmp_bin.shape[0]*0.9:
             continue
-        found_groups.append([[x, y, w, h, 8]])
+        for d in digits:
+            if d[0] >= x and d[1] >= y and d[0]+d[2] <= x+w and d[1]+d[3] <= y+h:
+                g_d.append(d)
+
+        g_d.sort(key=lambda el: -el[0])
+        if len(g_d) and g_d[0][4] != 5:
+            g_d[0][4] = 0
+        res_length = sum([el[4] * pow(10, k) for k, el in enumerate(g_d)])
+
+        found_groups.append([[x, y, w, h, res_length]])
     return found_groups
 
 
 # clf = joblib.load("data/digits_cls_lgbm.pkl")
-clf = joblib.load("data/digits_cls.pkl")
+clf = joblib.load("data/digits_cls_2.pkl")
+# clf = load_model('digits/dl/final_model.h5')
 # clf = joblib.load("data/digits_cls_bin_lgbm.pkl")
 def get_digit(img_bin: np.array, img_gray: np.array):
     img_b = img_bin.copy()
@@ -433,7 +445,9 @@ def get_digit(img_bin: np.array, img_gray: np.array):
         roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
         roi_gray = cv2.resize(roi_gray, (28, 28), interpolation=cv2.INTER_AREA)
         b_ww = 2
+        #roi = 255 - roi
         # roi = cv2.copyMakeBorder(roi, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
+        # roi = 255 - roi
         # roi_gray = cv2.copyMakeBorder(roi_gray, b_ww, b_ww, b_ww, b_ww, cv2.BORDER_CONSTANT, value=(255,))
         # cv2.imshow('fff2', roi)
         # cv2.waitKey()
@@ -442,6 +456,13 @@ def get_digit(img_bin: np.array, img_gray: np.array):
         roi_hog_fd = hog(roi, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1))
         # roi_hog_fd = hog(roi_gray, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1))
         nbr = clf.predict(np.array([roi_hog_fd], 'float64'))
+
+        # keras
+        # roi = roi.reshape(1, 28, 28, 1)
+        # roi = roi.astype('float32')
+        # roi = roi / 255.0
+        # nbr = clf.predict_classes(roi)
+        # print(nbr, 'FFFF')
 
         found_digits.append([x, y, w, h, nbr[0]])
 

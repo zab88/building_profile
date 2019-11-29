@@ -43,8 +43,8 @@ def expand_training_data(images, labels):
             print ('expanding data : %03d / %03d' % (k,np.size(images,0)))
 
         # register original data
-        expanded_images.append(x)
-        expanded_labels.append(y)
+        # expanded_images.append(x)
+        # expanded_labels.append(y)
 
         bg_value = -0.5 # this is regarded as background's value black
         #print(x)
@@ -53,14 +53,16 @@ def expand_training_data(images, labels):
         #print(image)
         #time.sleep(3)
         # for i in range(9,):
-        for i in [-15, -10, -5, 5, 10, 15]:
+        for i in [-15, -12, -10, -7, -5, -2, 0, 2, 5, 7, 10, 12, 15]:
+        # for i in [-15, 15]:
             # rotate the image with random degree
             # angle = np.random.randint(-20,20,1)
             angle = i
             new_img_ = ndimage.rotate(image,angle,reshape=False, cval=bg_value)
 
             # shift the image with random distance
-            # shift = np.random.randint(-2, 2, 2)
+            shift = np.random.randint(-2, 2, 2)
+            new_img_ = ndimage.shift(new_img_, shift, cval=bg_value)
             # new_img_ = ndimage.shift(new_img,shift, cval=bg_value)
 
             #code for saving some of these for visualization purpose only
@@ -80,15 +82,20 @@ def expand_training_data(images, labels):
     expandedY=np.asarray(expanded_labels)
     return expandedX, expandedY
 
-# features, labels = expand_training_data(features, labels)
+# features, labels = expand_training_data(features[:6000], labels[:6000])
+features, labels = expand_training_data(features, labels)
 
 # Extract the hog features
 list_hog_fd = []
 for feature in features:
     # fd = hog(feature.reshape((28, 28)), orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1), visualise=False)
     # feature = np.array([0 if x < 120 else 255 for x in feature])
+
     reshaped = feature.reshape((28, 28))
-    # reshaped = np.array([0 if x < 120 else 255 for x in reshaped])
+    # reshaped = np.array([0 if x < 50 else 255 for x in feature])
+    # reshaped[reshaped < 50] = 0
+    # reshaped[reshaped >= 50] = 255
+
     fd = hog(reshaped, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1))
     list_hog_fd.append(fd)
 hog_features = np.array(list_hog_fd, 'float64')
@@ -97,11 +104,11 @@ print("Count of digits in dataset", Counter(labels))
 
 # Create an linear SVM object
 clf = LinearSVC()
-# clf = LGBMClassifier()
+# clf = LGBMClassifier(n_jobs=-1)
 
 # Perform the training
 clf.fit(hog_features, labels)
 
 # Save the classifier
 # joblib.dump(clf, "../data/digits_cls_bin_lgbm.pkl", compress=3)
-joblib.dump(clf, "../data/digits_cls.pkl", compress=3)
+joblib.dump(clf, "../data/digits_cls_22.pkl", compress=3)
