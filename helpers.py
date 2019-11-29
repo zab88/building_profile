@@ -96,8 +96,9 @@ def get_profile(img_bin: np.array):
         if best_c2 is not None:
             cv2.drawContours(tmp_bin, [best_c2], -1, (0,), -1)
 
-        kernel = np.ones((3, 3), np.uint8)
-        tmp_bin = cv2.erode(tmp_bin, kernel)
+        if best_c2 is not None:
+            kernel = np.ones((3, 3), np.uint8)
+            tmp_bin = cv2.erode(tmp_bin, kernel)
 
         # cv2.imshow('fff', tmp_bin)
         # cv2.waitKey()
@@ -340,11 +341,26 @@ def get_digit_groups2(digits, profile):
         res_length = sum([el[4] * pow(10, k) for k, el in enumerate(g_d)])
 
         found_groups.append([[x, y, w, h, res_length]])
-    return found_groups
+
+    found_groups2 = []
+    for k, p in enumerate(profile):
+        if k+1 >= len(profile):
+            continue
+        y_p, x_p = (p[0][1] + profile[k + 1][0][1]) // 2, (p[0][0] + profile[k + 1][0][0]) // 2
+        best_group = None
+        best_distance = pow(10, 10)
+        for g in found_groups:
+            y_g, x_g = g[0][1] + g[0][3]//2, g[0][0] + g[0][2]//2
+            if (x_p - x_g)*(x_p - x_g) + (y_p - y_g)*(y_p - y_g) < best_distance:
+                best_distance = (x_p - x_g)*(x_p - x_g) + (y_p - y_g)*(y_p - y_g)
+                best_group = g[:]
+        found_groups2.append(best_group)
+
+    return found_groups2
 
 
 # clf = joblib.load("data/digits_cls_lgbm.pkl")
-clf = joblib.load("data/digits_cls_2.pkl")
+clf = joblib.load("data/digits_cls.pkl")
 # clf = load_model('digits/dl/final_model.h5')
 # clf = joblib.load("data/digits_cls_bin_lgbm.pkl")
 def get_digit(img_bin: np.array, img_gray: np.array):
