@@ -4,6 +4,7 @@ from skimage.feature import hog
 from sklearn.externals import joblib
 from itertools import permutations
 # from keras.models import load_model
+import joblib as joblib_core
 
 
 def get_8_parts(img_bin: np.array) -> list:
@@ -48,7 +49,7 @@ def get_profile(img_bin: np.array):
     # check that cell contains profile
     has_something = img_bin[int(hh*0.1):int(hh*0.9), int(ww*0.1):int(ww*0.9)]
     if np.count_nonzero(255 - has_something) < hh+ww:
-        return None
+        return None, None
 
 
     kernel_size = 3
@@ -75,6 +76,10 @@ def get_profile(img_bin: np.array):
         approx = cv2.approxPolyDP(cnt, perimeter*0.003, True)
 
         if w > 0.78*img_bin.shape[1] or h > 0.9*img_bin.shape[0]:
+            continue
+        if x < 0.1*img_bin.shape[1] or x > 0.9*img_bin.shape[1]:
+            continue
+        if y < 0.07*img_bin.shape[0] or y > 0.93*img_bin.shape[0]:
             continue
         if w < 0.2 * img_bin.shape[1] and h < 0.2 * img_bin.shape[0]:
             continue
@@ -111,13 +116,20 @@ def get_profile(img_bin: np.array):
 
         # print(len(contours_))
         if len(contours_) == 2:
-            return contours_[1]
+            best_c = contours_[1]
 
         # cv2.imshow('fff', tmp_bin)
         # cv2.waitKey()
 
+    profile_names = joblib_core.load('data/profile_names.pkl')
+    best_match, best_calc = None, 2
+    for k, el in enumerate(profile_names['cnt']):
+        ret = cv2.matchShapes(best_c, el, 1, 0)
+        if best_calc < ret:
+            best_match = k
+            best_calc = ret
 
-    return best_c
+    return best_c, profile_names['names'][best_match]
 
 
 def cnt2res(cnt):

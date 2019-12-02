@@ -41,7 +41,7 @@ for r_num, r in enumerate(rec_8):
     cv2.rectangle(img_draw, (x, y), (x + w, y + h), (255, 0, 0), 1)
 
     img_dd = img_draw[y:y+h, x:x+w, :]  #.copy()
-    best_c = get_profile(img_bin[y:y+h, x:x+w])
+    best_c, name_best_c = get_profile(img_bin[y:y+h, x:x+w])
     if best_c is None:
         continue
     cv2.drawContours(img_dd, [best_c], -1, (0, 255, 0), 1)
@@ -95,6 +95,7 @@ for r_num, r in enumerate(rec_8):
 
     # print it out
     print("====== SECTION {} ======".format(r_num+1))
+    print(name_best_c)
     print(", ".join(["{}={}mm".format(section_names[k], int(el)) for k, el in enumerate(res_all_length)]))
     print(", ".join(["{}={}".format(angle_names[k], int(el)) for k, el in enumerate(res_all_angles)]))
     print('')
